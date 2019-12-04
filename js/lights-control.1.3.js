@@ -2,7 +2,7 @@
 
 var lightsControl = lightsControl || {}
 
-lightsControl.version = 1.2
+lightsControl.version = 1.3
 
 lightsControl.activateHueLibrary = function(){
   lightsControl.hue = jsHue()
@@ -33,6 +33,8 @@ lightsControl.findBridge = function(){
 lightsControl.identify = function(){
   console.log( 'identify device' )
   lightsControl.targetBridge = lightsControl.hue.bridge( lightsControl.targetBridgeIP )
+
+  console.log( 'bridge?', lightsControl.targetBridge)
 
   lightsControl.targetBridge.createUser( 'browserApp' ).then( function( data ){
     console.log( 'authentication data', data )
