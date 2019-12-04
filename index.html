@@ -53,7 +53,7 @@
   <script src="js/vendor/jshue.modified.1.6.js"></script>
 
   <!-- Our own functions -->
-  <script src="js/lights-control.1.6.js"></script>
+  <script src="js/lights-control.1.7.js"></script>
   <script>
     var lightsControl = lightsControl || {}
 
@@ -63,14 +63,15 @@
 
     // Update Bridge container
     lightsControl.domViews.refreshBridgeElement = function(){
-      let html = ''
+      let html = []
       if( !lightsControl.targetBridgeIP ){
-        html = '<a href="#" onclick="lightsControl.findBridge()">Find Bridge</a>'
+        html.push( '<a href="#" onclick="lightsControl.findBridge()">Find Bridge</a>' )
         
       }else{
-        html = 'Ok, IP: <a href="https://' + lightsControl.targetBridgeIP + ' target="_blank">' + lightsControl.targetBridgeIP + '</a> (open page and access the security warning to allow future request)'
+        html.push( 'Ok, IP: <a href="https://' + lightsControl.targetBridgeIP + ' target="_blank">' + lightsControl.targetBridgeIP + '</a> (open page and access the security warning to allow future request)' )
+        html.push( '<p><a href="#" onclick="lightsControl.forgetBridge()">Forget Bridge</a>')
       }
-      document.getElementById( 'bridgeContainer' ).innerHTML = html
+      document.getElementById( 'bridgeContainer' ).innerHTML = html.join( '' )
     }
 
     // Update User Authentication
@@ -83,6 +84,7 @@
           html.push( '<a href="#" onclick="lightsControl.identify()">Authenticate your device</a> (press the Hue Bridge button)' )
         }else{
           html.push( 'Ok, Authenticated:' + lightsControl.targetUsername )
+          html.push( '<p><a href="#" onclick="lightsControl.forgetUser()">Forget User</a>')
         }
 
         if( lightsControl.identificationStatus && lightsControl.identificationStatus.error ){
