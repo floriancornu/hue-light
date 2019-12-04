@@ -50,10 +50,10 @@
   <!-- Using jsHue SDK https://github.com/blargoner/jshue -->
   <!-- Modified _baseUrl for https -->
   <!-- <script src="js/vendor/jshue.js"></script> -->
-  <script src="js/vendor/jshue.modified.1.5.js"></script>
+  <script src="js/vendor/jshue.modified.1.6.js"></script>
 
   <!-- Our own functions -->
-  <script src="js/lights-control.1.5.js"></script>
+  <script src="js/lights-control.1.6.js"></script>
   <script>
     var lightsControl = lightsControl || {}
 
@@ -68,7 +68,7 @@
         html = '<a href="#" onclick="lightsControl.findBridge()">Find Bridge</a>'
         
       }else{
-        html = 'Ok, IP:' + lightsControl.targetBridgeIP
+        html = 'Ok, IP: <a href="https://' + lightsControl.targetBridgeIP + ' target="_blank">' + lightsControl.targetBridgeIP + '</a> (open page and access the security warning to allow future request)'
       }
       document.getElementById( 'bridgeContainer' ).innerHTML = html
     }
