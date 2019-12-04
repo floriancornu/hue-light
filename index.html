@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title></title>
+  <title>Hue Light Control</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -23,19 +23,101 @@
   <![endif]-->
 
   <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
+  <h1>Control Hue Lights</h1>
+  <hr>
+  <h2>Hue Bridge</h2>
+  <div id="bridgeContainer"></div>
+
+  <hr>
+  <h3>Identification</h3>
+  <div id="identificationContainer"></div>
+
+
+
   <script src="js/vendor/modernizr-3.7.1.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.4.1.min.js"><\/script>')</script>
   <script src="js/plugins.js"></script>
   <script src="js/main.js"></script>
 
-  <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+  <!-- Using jsHue SDK https://github.com/blargoner/jshue -->
+  <script src="js/vendor/jshue.js"></script>
+
+  <!-- Our own functions -->
+  <script src="js/lights-control.js"></script>
   <script>
+    var lightsControl = lightsControl || {}
+
+    lightsControl.activateHueLibrary()
+
+    lightsControl.domViews = {}
+
+    // Update Bridge container
+    lightsControl.domViews.refreshBridgeElement = function(){
+      let html = ''
+      if( !lightsControl.targetBridgeIP ){
+        html = '<a href="#" onclick="lightsControl.findBridge()">Find Bridge</a>'
+        
+      }else{
+        html = 'Ok, IP:' + lightsControl.targetBridgeIP
+      }
+      document.getElementById( 'bridgeContainer' ).innerHTML = html
+    }
+
+    // Update User Authentication
+    lightsControl.domViews.refreshAuthenticationElement = function(){
+      let html = []
+      if( !lightsControl.targetBridgeIP ){
+        html.push( 'Find your Bridge to start (see above)' )
+      }else{
+        if( !lightsControl.targetBridgeUser ){
+          html.push( '<a href="#" onclick="lightsControl.identify()">Authenticate your device</a> (press the Hue Bridge button)' )
+        }else{
+          html.push( 'Ok, Authenticated:' + lightsControl.targetBridgeUser )
+        }
+
+        if( lightsControl.identificationStatus && lightsControl.identificationStatus.error ){
+          html.push( '<p>Error: ' + JSON.stringify( lightsControl.identificationStatus.error ) + '</p>' )
+          if( lightsControl.identificationStatus.errorText ){
+            html.push( '<p><b>' + lightsControl.identificationStatus.errorText + '</b></p>' )
+          }
+        }
+      }
+      document.getElementById( 'identificationContainer' ).innerHTML = html.join( '' )
+    }
+
+
+
+
+
+    lightsControl.domViews.refreshBridgeElement()
+    lightsControl.domViews.refreshAuthenticationElement()
+
+
+
+
+    // // Start Hue
+    // var hue = jsHue()
+
+    // hue.discover().then(bridges => {
+    //   if(bridges.length === 0) {
+    //     console.log('No bridges found. :(')
+    //   } else {
+    //     bridges.forEach(b => console.log('Bridge found at IP address %s.', b.internalipaddress))
+    //   }
+    // }).catch(e => console.log('Error finding bridges', e))
+
+  </script>
+
+
+
+
+  <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+  <!-- <script>
     window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;
     ga('create', 'UA-XXXXX-Y', 'auto'); ga('set','transport','beacon'); ga('send', 'pageview')
   </script>
-  <script src="https://www.google-analytics.com/analytics.js" async></script>
+  <script src="https://www.google-analytics.com/analytics.js" async></script> -->
 </body>
 
 </html>
