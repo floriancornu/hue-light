@@ -33,6 +33,10 @@
   <div id="identificationContainer"></div>
 
   <hr>
+  <h3>Lights</h3>
+  <div id="lightsContainer"></div>
+
+  <hr>
   <footer>version: <span id="appVersion">v</span></footer>
 
 
@@ -48,7 +52,7 @@
   <script src="js/vendor/jshue.js"></script>
 
   <!-- Our own functions -->
-  <script src="js/lights-control.1.3.js"></script>
+  <script src="js/lights-control.1.4.js"></script>
   <script>
     var lightsControl = lightsControl || {}
 
@@ -74,10 +78,10 @@
       if( !lightsControl.targetBridgeIP ){
         html.push( 'Find your Bridge to start (see above)' )
       }else{
-        if( !lightsControl.targetBridgeUser ){
+        if( !lightsControl.targetUsername ){
           html.push( '<a href="#" onclick="lightsControl.identify()">Authenticate your device</a> (press the Hue Bridge button)' )
         }else{
-          html.push( 'Ok, Authenticated:' + lightsControl.targetBridgeUser )
+          html.push( 'Ok, Authenticated:' + lightsControl.targetUsername )
         }
 
         if( lightsControl.identificationStatus && lightsControl.identificationStatus.error ){
@@ -90,10 +94,33 @@
       document.getElementById( 'identificationContainer' ).innerHTML = html.join( '' )
     }
 
+    lightsControl.shortcuts = []
+    lightsControl.shortcuts.push( {on: true, name: 'on' } )
+    lightsControl.shortcuts.push( {on: false, name: 'off'} )
+    lightsControl.shortcuts.push( {on:true, xy: [0,1], name: 'green'} )
+    lightsControl.shortcuts.push( {on:true, xy: [1,0], name: 'red' } )
+    lightsControl.shortcuts.push( {on:true, xy: [0,0], name: 'blue'} )
 
+    lightsControl.domViews.refreshLightsElements = function(){
+      let html = []
 
-    lightsControl.domViews.refreshBridgeElement()
-    lightsControl.domViews.refreshAuthenticationElement()
+      if( !lightsControl.targetBridgeIP || !lightsControl.targetUsername ){
+        html.push( 'Authenticate your light first. See above' )
+      }else{
+        lightsControl.shortcuts.forEach( function( oneShortcut, arrayIndex ){
+          html.push( '<a href="#" onclick="lightsControl.runShortcut(' + arrayIndex + ')">' + oneShortcut.name + '</a>' )
+        } )
+      }
+      document.getElementById( 'lightsContainer' ).innerHTML = html.join( ' | ' )
+    }
+
+    lightsControl.runShortcut = function( index ){
+      let shortcutState = lightsControl.shortcuts[ index ]
+      lightsControl.changeLightState( shortcutState )
+    }
+
+    lightsControl.useLocalAuthentication()
+    lightsControl.refreshUI()
 
 
     // Show version
