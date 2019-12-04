@@ -37,6 +37,10 @@
   <div id="lightsContainer"></div>
 
   <hr>
+  <h3>Loop</h3>
+  <div id="loopContainer"></div>
+
+  <hr>
   <footer>version: <span id="appVersion">v</span></footer>
 
 
@@ -53,7 +57,8 @@
   <script src="js/vendor/jshue.modified.1.6.js"></script>
 
   <!-- Our own functions -->
-  <script src="js/lights-control.1.7.js"></script>
+  <script src="js/lights-control.1.8.js"></script>
+  <script src="js/lights-loop.js"></script>
   <script>
     var lightsControl = lightsControl || {}
 
@@ -121,6 +126,21 @@
       let shortcutState = lightsControl.shortcuts[ index ]
       lightsControl.changeLightState( shortcutState )
     }
+
+
+
+    lightsControl.domViews.refreshLoopElements = function(){
+      let html = []
+
+      if( !lightsControl.targetBridgeIP || !lightsControl.targetUsername ){
+        html.push( 'Authenticate your light first. See above' )
+      }else{
+        html.push( '<a href="#" onclick="lightsControl.loop.loopColors()">Start Loop</a>' )
+        html.push( '<a href="#" onclick="lightsControl.loop.stopLoop()">Stop Loop</a>' )
+      }
+      document.getElementById( 'loopContainer' ).innerHTML = html.join( ' | ' )
+    }
+
 
     lightsControl.useLocalAuthentication()
     lightsControl.refreshUI()
