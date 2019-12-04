@@ -32,6 +32,9 @@
   <h3>Identification</h3>
   <div id="identificationContainer"></div>
 
+  <hr>
+  <footer>version: <span id="appVersion">v</span></footer>
+
 
 
   <script src="js/vendor/modernizr-3.7.1.min.js"></script>
@@ -93,6 +96,10 @@
 
     lightsControl.domViews.refreshBridgeElement()
     lightsControl.domViews.refreshAuthenticationElement()
+
+
+    // Show version
+    document.getElementById( 'appVersion' ).innerText = lightsControl.version
 
 
 

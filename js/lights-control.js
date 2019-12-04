@@ -2,6 +2,8 @@
 
 var lightsControl = lightsControl || {}
 
+lightsControl.version = 1.2
+
 lightsControl.activateHueLibrary = function(){
   lightsControl.hue = jsHue()
 }
