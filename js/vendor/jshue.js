@@ -32,6 +32,10 @@ var jsHueAPI = (fetch, Response, JSON, Promise) => {
      */
     var _requestJson = (method, url, data) =>
         (new Promise(resolve => {
+            // For mobile debug purpose:
+            console.log( '_requestJson', method, url, data )
+            // End of mobile debug purpose
+
             if(data !== null) {
                 data = JSON.stringify(data);
             }
