@@ -34,6 +34,7 @@ var jsHueAPI = (fetch, Response, JSON, Promise) => {
         (new Promise(resolve => {
             // For mobile debug purpose:
             console.log( '_requestJson', method, url, data )
+            console.log( 'data', JSON.stringify( data ) )
             // End of mobile debug purpose
 
             if(data !== null) {
@@ -41,8 +42,20 @@ var jsHueAPI = (fetch, Response, JSON, Promise) => {
             }
             resolve(data);
          }))
-         .then(data => fetch(url, {method: method, body: data}))
-         .then(response => response.json());
+         .then(data => {
+            console.log( 'fetching' )
+            return fetch(url, {method: method, body: data})
+         } )
+         .then(response => {
+            console.log( 'response', response )
+            if( response ){
+              console.log( JSON.stringify( response ) )
+              console.log( 'type', response.type )
+              console.log( 'url', response.url )
+              console.log( 'status', response.status )
+            }
+            return response.json()
+         })
 
     /**
      * Performs fetch request with JSON (no body).
