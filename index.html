@@ -137,6 +137,9 @@
       }else{
         html.push( '<a href="#" onclick="lightsControl.loop.loopColors()">Start Loop</a>' )
         html.push( '<a href="#" onclick="lightsControl.loop.stopLoop()">Stop Loop</a>' )
+        if( lightsControl.loop.timerFeedback.timeToEnd ){
+          html.push( '<br/ >Ongoing Loop: Next change in ' + Math.round( lightsControl.loop.timerFeedback.timeToEnd ) + 's' )
+        }
       }
       document.getElementById( 'loopContainer' ).innerHTML = html.join( ' | ' )
     }
