@@ -4,10 +4,11 @@ lightsControl.loop = {}
 
 lightsControl.loop.timeouts = []
 
-lightsControl.loop.loopState = {
+lightsControl.loop.loopStateDefault = {
   sessionIndex: false,
   colorIndex: false,
-  loopContinues: true
+  loopContinues: true,
+  loopOngoing: false
 }
 lightsControl.loop.loopParams = {
   sessions: [30, 540],
@@ -21,8 +22,16 @@ lightsControl.loop.loopParams = {
   ]
 }
 
+lightsControl.loop.resetState = function(){
+  lightsControl.loop.loopState = Object.assign( {}, lightsControl.loop.loopStateDefault )
+}
+lightsControl.loop.resetState() // Reset at page load
+
 lightsControl.loop.loopColors = function(){
   console.log( 'run loop function' )
+  lightsControl.loop.resetState()
+  
+  lightsControl.loop.loopState.loopOngoing = true
   console.log( lightsControl.loop.loopState.sessionIndex, lightsControl.loop.loopState.colorIndex )
   
   Number.isFinite( lightsControl.loop.loopState.sessionIndex )?  lightsControl.loop.loopState.sessionIndex++ : lightsControl.loop.loopState.sessionIndex = 0
@@ -56,6 +65,7 @@ lightsControl.loop.loopColors = function(){
     lightsControl.loop.timeouts.push( timeoutId )
   }else{
     console.log( 'loop ends' )
+    lightsControl.loop.loopState.loopOngoing = false
   }
 }
 
@@ -68,7 +78,12 @@ lightsControl.loop.clearTimeouts = function( timeoutsParentObject ){
 
 lightsControl.loop.stopLoop = function(){
   lightsControl.loop.loopState.loopContinues = false
-  lightsControl.loop.clearTimeouts()
+  lightsControl.loop.loopState.loopOngoing = false
+  lightsControl.loop.clearTimeouts( lightsControl.loop )
+
+  lightsControl.loop.timerFeedback.stop()
+
+  lightsControl.domViews.refreshLoopElements()
 }
 
 
@@ -78,10 +93,16 @@ lightsControl.loop.timerFeedback = {
 }
 lightsControl.loop.timerFeedback.startTimeout = function( timing ){
   console.log( 'lightsControl.loop.timerFeedback.startTimeout' )
+  lightsControl.loop.timerFeedback.totalTime = timing / 1000
   lightsControl.loop.timerFeedback.endTiming = Date.now() + timing
 
   lightsControl.loop.timerFeedback.loopFeedbackTimeout()
 }
+
+lightsControl.loop.timerFeedback.stop = function(){
+  lightsControl.loop.clearTimeouts( lightsControl.loop.timerFeedback )
+}
+
 
 lightsControl.loop.timerFeedback.loopFeedbackTimeout = function(){
   lightsControl.loop.timerFeedback.updateUI()
@@ -95,7 +116,9 @@ lightsControl.loop.timerFeedback.loopFeedbackTimeout = function(){
 lightsControl.loop.timerFeedback.updateUI = function(){
 
   lightsControl.loop.timerFeedback.timeToEnd = ( lightsControl.loop.timerFeedback.endTiming - Date.now() ) / 1000
-  console.log( 'time to end:', lightsControl.loop.timerFeedback.timeToEnd )
+  let ratio = lightsControl.loop.timerFeedback.timeToEnd / lightsControl.loop.timerFeedback.totalTime
+  lightsControl.loop.timerFeedback.timePercent = Math.round( 100 * ( 1 - ratio ) )
+  console.log( 'time to end:', lightsControl.loop.timerFeedback.timeToEnd, ' / ', lightsControl.loop.timerFeedback.totalTime, ' = ', lightsControl.loop.timerFeedback.timePercent )
   lightsControl.refreshUI()
 }
 

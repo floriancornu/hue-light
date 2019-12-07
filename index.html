@@ -31,21 +31,37 @@
   <!-- Add your site or application content here -->
   <div class="container">
     <h1>Local Web Hue Light Control</h1>
-    <hr>
-    <h2>Hue Bridge</h2>
-    <div id="bridgeContainer"></div>
 
-    <hr>
-    <h3>Identification</h3>
-    <div id="identificationContainer"></div>
 
-    <hr>
-    <h3>Light</h3>
-    <div id="lightsContainer"></div>
+    <ul class="nav nav-tabs" id="appTabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="toControls" data-toggle="tab" href="#controls" role="tab" aria-controls="home" aria-selected="true">Controls</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="toConnection" data-toggle="tab" href="#connection" role="tab" aria-controls="profile" aria-selected="false">Connection</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="appContent">
+      <div class="tab-pane fade show active" id="controls" role="tabpanel">
+        <h3>Light</h3>
+        <div id="lightsContainer"></div>
 
-    <hr>
-    <h3>Loop</h3>
-    <div id="loopContainer"></div>
+        <hr>
+        <h3>Loop</h3>
+        <div id="loopContainer"></div>
+      </div>
+
+
+      <div class="tab-pane fade" id="connection" role="tabpanel">
+        <h3>Hue Bridge</h3>
+        <div id="bridgeContainer"></div>
+
+        <hr>
+        <h3>Identification</h3>
+        <div id="identificationContainer"></div>
+      </div>
+    </div>
+
 
     <hr>
     <footer>version: <span id="appVersion">v</span></footer>
@@ -57,7 +73,7 @@
   <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.4.1.min.js"><\/script>')</script>
 
   <!-- Bootstrap -->
-  <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
   <!-- End of Bootstrap -->
 
   <script src="js/plugins.js"></script>
@@ -75,12 +91,18 @@
 
     lightsControl.domViews = {}
 
+    lightsControl.domViews.updateTabName = function(){
+      if( !lightsControl.targetBridgeIP || !lightsControl.targetUsername ){
+        let tabName = 'Connection <span class="badge badge-pill badge-danger">!!</span>'
+        document.getElementById( 'toConnection' ).innerHTML = tabName
+      }
+    }
+
     // Update Bridge container
     lightsControl.domViews.refreshBridgeElement = function(){
       let html = []
       if( !lightsControl.targetBridgeIP ){
         html.push( '<a href="#" onclick="lightsControl.findBridge()">Find Bridge</a>' )
-        
       }else{
         html.push( 'Ok, IP: <a href="http://' + lightsControl.targetBridgeIP + '" target="_blank">' + lightsControl.targetBridgeIP + '</a>' )
         // If loading SSL, the certificate might be invalid and be manually accepted by opening the page
@@ -88,6 +110,8 @@
         html.push( '<button type="button" class="btn btn-warning btn-sm" onclick="lightsControl.forgetBridge()">Disconnect Bridge</button>')
       }
       document.getElementById( 'bridgeContainer' ).innerHTML = html.join( '' )
+
+      lightsControl.domViews.updateTabName()
     }
 
     // Update User Authentication
@@ -111,6 +135,7 @@
         }
       }
       document.getElementById( 'identificationContainer' ).innerHTML = html.join( '' )
+      lightsControl.domViews.updateTabName()
     }
 
     lightsControl.shortcuts = []
@@ -153,13 +178,20 @@
       if( !lightsControl.targetBridgeIP || !lightsControl.targetUsername ){
         html.push( 'Authenticate your light first. See above' )
       }else{
-        html.push( '<a href="#" onclick="lightsControl.loop.loopColors()">Start Loop</a>' )
-        html.push( '<a href="#" onclick="lightsControl.loop.stopLoop()">Stop Loop</a>' )
-        if( lightsControl.loop.timerFeedback.timeToEnd ){
+
+        if( lightsControl.loop.loopState.loopOngoing ){
+          html.push( '<button type="button" class="btn btn-danger btn-sm" onclick="lightsControl.loop.stopLoop()">Stop Loop</button>' )
+        }else{
+          html.push( '<button type="button" class="btn btn-primary btn-sm" onclick="lightsControl.loop.loopColors()">Start Loop</button>' )
+        }
+        if( lightsControl.loop.loopState.loopOngoing && lightsControl.loop.timerFeedback.timeToEnd ){
+          let progressBar = '<div class="progress"><div class="progress-bar progress-bar-striped" role="progressbar" style="width: ' + lightsControl.loop.timerFeedback.timePercent + '%"></div></div>'
+          html.push( progressBar )
+
           html.push( '<br/ >Ongoing Loop: Next change in ' + Math.round( lightsControl.loop.timerFeedback.timeToEnd ) + 's' )
         }
       }
-      document.getElementById( 'loopContainer' ).innerHTML = html.join( ' | ' )
+      document.getElementById( 'loopContainer' ).innerHTML = html.join( '' )
     }
 
 
