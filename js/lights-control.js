@@ -31,6 +31,7 @@ lightsControl.refreshUI = function(){
 }
 
 
+
 lightsControl.findBridge = function(){
   console.log( 'finding Bridge' )
   lightsControl.hue.discover().then( function( bridges ){
@@ -42,8 +43,15 @@ lightsControl.findBridge = function(){
       } )
 
       // Use the first bridge
-      localStorage.setItem('bridgeIP', bridges[0].internalipaddress)
-      lightsControl.targetBridgeIP = bridges[0].internalipaddress
+      let currentBridgeIP = bridges[0].internalipaddress
+      let previousBridgeIP = localStorage.getItem('bridgeIP')
+      if( previousBridgeIP !== currentBridgeIP ){
+        console.warn( 'bridge IP changed from ', previousBridgeIP, ' to ', currentBridgeIP )
+      }
+
+      // Update settings
+      localStorage.setItem('bridgeIP', currentBridgeIP )
+      lightsControl.targetBridgeIP = currentBridgeIP
     }
 
     lightsControl.refreshUI()
