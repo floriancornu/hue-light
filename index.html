@@ -72,6 +72,8 @@
     var lightsControl = lightsControl || {}
 
     lightsControl.activateHueLibrary()
+    lightsControl.findBridge()
+
 
     lightsControl.domViews = {}
 
@@ -82,8 +84,10 @@
         html.push( '<a href="#" onclick="lightsControl.findBridge()">Find Bridge</a>' )
         
       }else{
-        html.push( 'Ok, IP: <a href="http://' + lightsControl.targetBridgeIP + '" target="_blank">' + lightsControl.targetBridgeIP + '</a> (open page and access the security warning to allow future request)' )
-        html.push( '<p><a href="#" onclick="lightsControl.forgetBridge()">Forget Bridge</a>')
+        html.push( 'Ok, IP: <a href="http://' + lightsControl.targetBridgeIP + '" target="_blank">' + lightsControl.targetBridgeIP + '</a>' )
+        // If loading SSL, the certificate might be invalid and be manually accepted by opening the page
+
+        html.push( '<button type="button" class="btn btn-warning btn-sm" onclick="lightsControl.forgetBridge()">Disconnect Bridge</button>')
       }
       document.getElementById( 'bridgeContainer' ).innerHTML = html.join( '' )
     }
