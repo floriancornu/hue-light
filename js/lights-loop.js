@@ -43,7 +43,7 @@ lightsControl.loop.loopColors = function(){
   var oneColor = lightsControl.loop.loopParams.colors[ lightsControl.loop.loopState.colorIndex ]
   console.log( 'coming color:', oneColor )
   var bodyObj = Object.assign( { "on": true }, oneColor )
-  lightsControl.changeLightState( bodyObj )
+  lightsControl.lightState.set( bodyObj )
 
   
   if( lightsControl.loop.loopState.loopContinues ){

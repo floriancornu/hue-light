@@ -29,26 +29,27 @@
   <![endif]-->
 
   <!-- Add your site or application content here -->
-  <h1>Local Web Hue Light Control</h1>
-  <hr>
-  <h2>Hue Bridge</h2>
-  <div id="bridgeContainer"></div>
+  <div class="container">
+    <h1>Local Web Hue Light Control</h1>
+    <hr>
+    <h2>Hue Bridge</h2>
+    <div id="bridgeContainer"></div>
 
-  <hr>
-  <h3>Identification</h3>
-  <div id="identificationContainer"></div>
+    <hr>
+    <h3>Identification</h3>
+    <div id="identificationContainer"></div>
 
-  <hr>
-  <h3>Lights</h3>
-  <div id="lightsContainer"></div>
+    <hr>
+    <h3>Light</h3>
+    <div id="lightsContainer"></div>
 
-  <hr>
-  <h3>Loop</h3>
-  <div id="loopContainer"></div>
+    <hr>
+    <h3>Loop</h3>
+    <div id="loopContainer"></div>
 
-  <hr>
-  <footer>version: <span id="appVersion">v</span></footer>
-
+    <hr>
+    <footer>version: <span id="appVersion">v</span></footer>
+  </div>
 
 
   <script src="js/vendor/modernizr-3.7.1.min.js"></script>
@@ -70,9 +71,6 @@
   <script src="js/lights-loop.js"></script>
   <script>
     var lightsControl = lightsControl || {}
-
-    lightsControl.activateHueLibrary()
-    lightsControl.findBridge()
 
 
     lightsControl.domViews = {}
@@ -99,14 +97,14 @@
         html.push( 'Find your Bridge to start (see above)' )
       }else{
         if( !lightsControl.targetUsername ){
-          html.push( '<a href="#" onclick="lightsControl.identify()">Authenticate your device</a> (press the Hue Bridge button)' )
+          html.push( '<button type="button" class="btn btn-primary btn-sm" onclick="lightsControl.identify()">Authenticate your device</button> (press the Hue Bridge button)' )
         }else{
           html.push( 'Ok, Authenticated:' + lightsControl.targetUsername )
           html.push( '<p><a href="#" onclick="lightsControl.forgetUser()">Forget User</a>')
         }
 
         if( lightsControl.identificationStatus && lightsControl.identificationStatus.error ){
-          html.push( '<p>Error: ' + JSON.stringify( lightsControl.identificationStatus.error ) + '</p>' )
+          html.push( '<div class="alert alert-warning" role="alert">Error: ' + JSON.stringify( lightsControl.identificationStatus.error ) + '</div>' )
           if( lightsControl.identificationStatus.errorText ){
             html.push( '<p><b>' + lightsControl.identificationStatus.errorText + '</b></p>' )
           }
@@ -132,12 +130,19 @@
           html.push( '<a href="#" onclick="lightsControl.runShortcut(' + arrayIndex + ')">' + oneShortcut.name + '</a>' )
         } )
       }
+
+      if( lightsControl.lightState && lightsControl.lightState.info ){
+        html.push( '<div class="alert alert-info" role="info">' + lightsControl.lightState.info + '</div>')
+      }
+      if( lightsControl.lightState && lightsControl.lightState.error ){
+        html.push( '<div class="alert alert-warning" role="info">' + lightsControl.lightState.error + '</div>')
+      }
       document.getElementById( 'lightsContainer' ).innerHTML = html.join( ' | ' )
     }
 
     lightsControl.runShortcut = function( index ){
       let shortcutState = lightsControl.shortcuts[ index ]
-      lightsControl.changeLightState( shortcutState )
+      lightsControl.lightState.set( shortcutState )
     }
 
 
@@ -158,26 +163,14 @@
     }
 
 
-    lightsControl.useLocalAuthentication()
-    lightsControl.refreshUI()
-
-
     // Show version
     document.getElementById( 'appVersion' ).innerText = lightsControl.version
 
-
-
-
-    // // Start Hue
-    // var hue = jsHue()
-
-    // hue.discover().then(bridges => {
-    //   if(bridges.length === 0) {
-    //     console.log('No bridges found. :(')
-    //   } else {
-    //     bridges.forEach(b => console.log('Bridge found at IP address %s.', b.internalipaddress))
-    //   }
-    // }).catch(e => console.log('Error finding bridges', e))
+    lightsControl.activateHueLibrary()
+    lightsControl.findBridge()
+    lightsControl.useLocalAuthentication()
+    lightsControl.lightState.get()    
+    lightsControl.refreshUI()
 
   </script>
 
